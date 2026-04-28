@@ -10,6 +10,7 @@ import json
 from typing import Any
 
 from bedrock_client import client, MODEL
+from escalation import pre_tool_use_hook
 
 
 # ── Shared helpers ─────────────────────────────────────────────────────────────
@@ -269,11 +270,15 @@ After calling all four tools, write a concise customer-facing response:
         return {"ticket": ticket}
 
     def _make_handlers(self) -> dict[str, Any]:
+        def _hooked_generate_bug_ticket(all_data: dict) -> dict:
+            pre_tool_use_hook("generate_bug_ticket", {"all_data": all_data})
+            return self._generate_bug_ticket(all_data)
+
         return {
-            "analyze_severity":        lambda message: self._analyze_severity(message),
+            "analyze_severity":           lambda message: self._analyze_severity(message),
             "extract_reproduction_steps": lambda message: self._extract_reproduction_steps(message),
-            "check_known_issues":      lambda subject: self._check_known_issues(subject),
-            "generate_bug_ticket":     lambda all_data: self._generate_bug_ticket(all_data),
+            "check_known_issues":         lambda subject: self._check_known_issues(subject),
+            "generate_bug_ticket":        _hooked_generate_bug_ticket,
         }
 
     def process(self, request: dict, classification: dict) -> str:
@@ -668,11 +673,15 @@ After calling the tools, write a concise, professional customer-facing response:
         return {"resolution": resolution}
 
     def _make_handlers(self) -> dict[str, Any]:
+        def _hooked_flag_for_human(reason: str) -> dict:
+            pre_tool_use_hook("flag_for_human", {"reason": reason})
+            return self._flag_for_human(reason)
+
         return {
             "detect_urgency":      lambda message: self._detect_urgency(message),
             "identify_issue_type": lambda message: self._identify_issue_type(message),
             "check_policy":        lambda issue_type: self._check_policy(issue_type),
-            "flag_for_human":      lambda reason: self._flag_for_human(reason),
+            "flag_for_human":      _hooked_flag_for_human,
             "generate_resolution": lambda all_data: self._generate_resolution(all_data),
         }
 
