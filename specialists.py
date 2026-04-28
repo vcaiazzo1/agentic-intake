@@ -13,6 +13,19 @@ from bedrock_client import client, MODEL
 from escalation import pre_tool_use_hook
 
 
+# ── Tool-call tracker (populated by _run_agent_loop) ─────────────────────────
+
+_tool_calls_log: list[str] = []
+
+
+def clear_tool_log() -> None:
+    _tool_calls_log.clear()
+
+
+def get_tool_log() -> list[str]:
+    return list(_tool_calls_log)
+
+
 # ── Shared helpers ─────────────────────────────────────────────────────────────
 
 def _validate_str(value: Any, name: str) -> str | dict:
@@ -53,6 +66,7 @@ def _run_agent_loop(
         )
 
         tool_uses = [b for b in response.content if b.type == "tool_use"]
+        _tool_calls_log.extend(b.name for b in tool_uses)
 
         if not tool_uses:
             return next(

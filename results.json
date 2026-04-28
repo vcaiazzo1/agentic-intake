@@ -1,0 +1,152 @@
+[
+  {
+    "request": {
+      "id": 1,
+      "name": "Frank Brown",
+      "email": "frank.brown13@hotmail.com",
+      "category": "bug_report",
+      "subject": "Search returns no results for any query",
+      "message": "The search bar has completely stopped working. No matter what I type — even the exact title of a document I can see on screen — it returns 'No results found.' This started around 10 AM today. Other team members are experiencing the same issue.",
+      "timestamp": "2025-06-19T18:36:00"
+    },
+    "classification": {
+      "category": "bug_report",
+      "confidence": 0.9,
+      "impact": "high",
+      "reasoning": "Let me analyze this support request step by step:\n\n1. **What is the customer describing?** Frank is reporting that the search functionality has completely stopped working. He mentions that \"No matter what I type — even the exact title of a document I can see on screen — it returns 'No results found.'\" This indicates the search feature is not functioning at all, rather than just returning poor results.\n\n2. **When did it start and scope of impact?** The issue started \"around 10 AM today\" and \"Other team members are experiencing the same issue.\" This suggests it's not an isolated problem affecting just one user, but a widespread issue affecting multiple users simultaneously.\n\n3. **What category does this fit?** This is clearly a bug_report because:\n   - Something that was previously working (search functionality) is now broken\n   - The behavior is unexpected (search should return results for exact document titles)\n   - It's a system malfunction rather than a request for new features, billing concerns, or general questions\n\n4. **What is the business impact?** This should be classified as \"high\" impact because:\n   - Search is typically a core functionality that users rely on heavily\n   - Multiple users are affected (not just one person)\n   - The feature is completely non-functional (not partially degraded)\n   - Users cannot find documents they need, which significantly impacts productivity\n   - While not system-wide down, this represents a major feature being broken for multiple users\n\n5. **Confidence level:** I'm very confident (0.9) in this classification because the description clearly indicates broken functionality affecting multiple users with specific symptoms and timeline."
+    },
+    "escalated": false,
+    "escalation_detail": {
+      "action": "auto-handle",
+      "reason": "Within automated handling thresholds."
+    },
+    "specialist_output": "---\n\n## Customer Response\n\nDear Frank,\n\nThank you for reporting this search functionality issue. I understand how frustrating it must be when you can't find documents even when searching for their exact titles, especially when this is affecting your entire team's productivity.\n\n**Severity Assessment:** I've classified this as a **high severity** issue given that the search function is completely non-functional and multiple team members are experiencing the same problem.\n\n**Reproduction Steps:** While your description clearly outlines the problem (search returning \"No results found\" for all queries), I'll need some additional information to help our engineering team reproduce and fix this issue quickly. Could you please provide:\n1. The specific browser you're using\n2. Any error messages in the browser console (F12 → Console tab)\n3. The exact steps you take when performing a search\n4. Whether you've tried logging out and back in\n\n**Known Issues:** I've checked our knowledge base and this doesn't match any previously reported issues, so this appears to be a new problem that emerged today.\n\n**Bug Ticket Created:** I've created a high-priority bug ticket for our engineering team:\n\n```\n# Bug Ticket\n\n## Title\nSearch functionality returning no results for all queries\n\n## Severity\nHigh\n\n## Reporter\nFrank Brown <frank.brown13@hotmail.com>\n\n## Description\nThe search functionality has completely failed, returning \"No results found\" for all queries regardless of input. This affects multiple users and began approximately 10:00 AM on 2025-06-19. Users cannot search for documents even when using exact titles of visible documents.\n\n## Reproduction Steps\n*Steps not provided - requires investigation*\n\n## Known Issues\nNone found\n\n## Priority\nHigh - Critical functionality impacting multiple users\n\n## Next Steps\n1. Investigate search service status and logs starting from 10:00 AM on 2025-06-19\n2. Verify search index integrity\n3. Check database connectivity for search components\n4. Reproduce issue and document steps\n5. Determine scope of affected users\n6. Implement fix and verify resolution\n```\n\nOur engineering team is already investigating this issue and will prioritize it given the widespread impact. I'll keep you updated on our progress and let you know as soon as we have a resolution.\n\nBest regards,  \nTechnical Support Team",
+    "tools_called": [
+      "analyze_severity",
+      "extract_reproduction_steps",
+      "check_known_issues",
+      "generate_bug_ticket"
+    ],
+    "processing_ms": 30536
+  },
+  {
+    "request": {
+      "id": 2,
+      "name": "Bob Martinez",
+      "email": "bob.martinez14@icloud.com",
+      "category": "bug_report",
+      "subject": "Export to PDF button does nothing",
+      "message": "The 'Export to PDF' button stopped working about two days ago. When I click it, a loading spinner appears briefly and then disappears without downloading anything. I've tested in Chrome and Edge and the issue is the same in both.",
+      "timestamp": "2026-02-19T14:51:00"
+    },
+    "classification": {
+      "category": "bug_report",
+      "confidence": 0.9,
+      "impact": "medium",
+      "reasoning": "Let me analyze this support request step by step:\n\n1. **What the customer is describing**: Bob Martinez reports that the 'Export to PDF' button has stopped working. When clicked, it shows a loading spinner briefly but fails to produce any PDF download. This started approximately two days ago.\n\n2. **Evidence this is a bug**: The customer specifically mentions the feature \"stopped working\" which indicates it was functioning before and now isn't. The behavior described (loading spinner appears then disappears without result) suggests the system is attempting to process the request but failing silently.\n\n3. **Cross-browser testing**: The customer has tested in both Chrome and Edge with the same negative results, which rules out browser-specific issues and suggests a server-side or application-level problem.\n\n4. **Impact assessment**: This affects a specific feature (PDF export functionality). While this could be disruptive to users who rely on PDF exports for their workflow, it's not causing system-wide outages or data loss. Users can likely continue their work but cannot export to PDF format, which represents a medium-level degradation with potential workarounds (like using other export formats if available).\n\n5. **Category determination**: This clearly fits 'bug_report' as it describes functionality that was working but is now broken, with specific reproducible symptoms.\n\n6. **Confidence level**: Very high confidence (0.9) because the description clearly indicates broken functionality with specific symptoms and testing details."
+    },
+    "escalated": false,
+    "escalation_detail": {
+      "action": "auto-handle",
+      "reason": "Within automated handling thresholds."
+    },
+    "specialist_output": "---\n\n## Response to Customer\n\nHi Bob,\n\nThank you for reporting this issue with the PDF export functionality. I understand how frustrating it must be when a feature you rely on suddenly stops working, especially when you've taken the time to test it across multiple browsers.\n\n**Severity Assessment:** I've classified this as a **medium severity** issue since it affects core functionality but doesn't prevent you from continuing your primary work.\n\n**Reproduction Steps:** Based on your description, I've documented the issue as:\n1. Click the \"Export to PDF\" button\n2. Loading spinner appears briefly\n3. Spinner disappears without generating a PDF download\n4. Issue occurs in both Chrome and Edge browsers\n\nHowever, to help our development team investigate more effectively, could you please provide additional details about:\n- What type of document/report you're trying to export\n- Approximate size of the content being exported\n- Any specific pages or sections where this occurs\n\n**Known Issues:** I found one related known issue in our system: **KI-1042** regarding PDF export problems with reports larger than 10 MB, which was addressed in version 2.4.1. This may be related to your issue.\n\n**Bug Ticket Created:** I've generated a comprehensive bug ticket (shown above) that captures all the details you've provided. Our development team will investigate this promptly, starting with verifying your current software version and checking if this relates to the known large file issue.\n\nWe'll keep you updated as we investigate. Thank you for the thorough testing and clear description!\n\nBest regards,\nTechnical Support Team",
+    "tools_called": [
+      "analyze_severity",
+      "extract_reproduction_steps",
+      "check_known_issues",
+      "generate_bug_ticket"
+    ],
+    "processing_ms": 29379
+  },
+  {
+    "request": {
+      "id": 3,
+      "name": "Henry Davis",
+      "email": "henry.davis63@hotmail.com",
+      "category": "bug_report",
+      "subject": "Two-factor authentication code always rejected",
+      "message": "My 2FA codes are being rejected even though the timer hasn't expired. I'm using Google Authenticator and the time on my phone is correct. This started happening after I got a new phone and re-scanned the QR code. I'm completely unable to log in.",
+      "timestamp": "2025-03-08T13:38:00"
+    },
+    "classification": {
+      "category": "bug_report",
+      "confidence": 0.9,
+      "impact": "high",
+      "reasoning": "Let me analyze this support request step by step:\n\n1. **What is the customer describing?** Henry Davis reports that his two-factor authentication (2FA) codes are being consistently rejected, preventing him from logging in. He mentions using Google Authenticator, having correct time on his phone, and that this issue started after getting a new phone and re-scanning the QR code.\n\n2. **Is this something broken or a request for new functionality?** This is clearly something that should work but isn't working properly. 2FA codes should be accepted when they're valid and within the time window. The customer indicates he followed the proper setup process (re-scanning QR code on new phone) but the system is rejecting valid codes.\n\n3. **What category does this fit?** This is a **bug_report** because:\n   - The 2FA system is not functioning as expected\n   - Valid codes are being incorrectly rejected\n   - This represents broken functionality rather than a request for new features, billing issues, or general questions\n\n4. **What is the business impact?** This is **high impact** because:\n   - The customer is \"completely unable to log in\" - this is a complete access blockage\n   - Authentication is a critical system function\n   - While it affects one user currently, 2FA issues can potentially affect many users\n   - This goes beyond minor inconvenience - it's a major functional failure preventing system access\n\n5. **Confidence level:** I'm very confident (0.9) in this classification because the customer clearly describes broken functionality with specific technical details and troubleshooting steps already attempted."
+    },
+    "escalated": false,
+    "escalation_detail": {
+      "action": "auto-handle",
+      "reason": "Within automated handling thresholds."
+    },
+    "specialist_output": "---\n\n## Customer Response\n\nDear Henry,\n\nThank you for contacting us about the two-factor authentication issue you're experiencing. I completely understand how frustrating it must be to be locked out of your account, especially after following the proper setup process with your new phone.\n\n**Severity Assessment:** I've classified this as a **high severity** issue since you're completely unable to access your account, which is a critical functionality problem.\n\n**Reproduction Steps:** I noticed that your initial report doesn't include specific step-by-step reproduction instructions. To help our development team investigate this thoroughly, could you please provide the exact steps you're taking when the codes get rejected? For example:\n1. Open Google Authenticator app\n2. Copy/type the 6-digit code\n3. Enter code in our login form\n4. Click submit\n5. Receive rejection message\n\n**Known Issues:** I've checked our knowledge base and this doesn't match any currently known issues, which suggests this may be a new problem that needs investigation.\n\n**Bug Ticket Created:** I've created a high-priority bug ticket for our development team:\n\n---\n\n# Bug Ticket\n\n## Title\nTwo-Factor Authentication Codes Consistently Rejected After Device Migration\n\n## Severity\nHigh\n\n## Reporter\nHenry Davis <henry.davis63@hotmail.com>\n\n## Description\nUser reports that 2FA codes generated by Google Authenticator are being rejected during login attempts, despite codes being within the valid time window. Issue began after migrating to a new phone and re-scanning the QR code for 2FA setup. User confirms device time synchronization is correct. Complete login failure is preventing account access.\n\n## Reproduction Steps\n*Steps not provided in original report - investigation required*\n\n## Known Issues\nNone found\n\n## Priority\nHigh - Complete login failure affecting user account access\n\n## Next Steps\n1. Investigate 2FA token generation and validation process\n2. Verify QR code generation during device migration flow\n3. Check for time synchronization issues between server and client\n4. Test 2FA setup process on new devices\n5. Contact user to gather additional technical details and attempt resolution\n\n---\n\nOur development team will begin investigating this immediately. In the meantime, I'll also explore temporary access options to get you back into your account. You should expect an update from us within 24 hours.\n\nBest regards,\nTechnical Support Team",
+    "tools_called": [
+      "analyze_severity",
+      "extract_reproduction_steps",
+      "check_known_issues",
+      "generate_bug_ticket"
+    ],
+    "processing_ms": 29818
+  },
+  {
+    "request": {
+      "id": 4,
+      "name": "Nina Evans",
+      "email": "nina.evans27@yahoo.com",
+      "category": "general_question",
+      "subject": "What is your data retention policy?",
+      "message": "Before we commit to using your platform for sensitive client data, our security team needs to understand your data retention policy. Specifically: how long is data stored after an account is closed, and do you offer options for data deletion on request?",
+      "timestamp": "2026-04-21T04:21:00"
+    },
+    "classification": {
+      "category": "general_question",
+      "confidence": 0.95,
+      "impact": "low",
+      "reasoning": "Let me analyze this support request step by step:\n\n1. **What is the customer describing?** Nina Evans is asking about the company's data retention policy. She specifically wants to know: (a) how long data is stored after account closure, and (b) whether there are options for on-demand data deletion. She mentions this is for \"sensitive client data\" and that her \"security team needs to understand\" this information before committing to use the platform.\n\n2. **What is the nature of this request?** This is clearly an informational inquiry - she's asking for clarification about existing policies and procedures. She's not reporting anything broken, not requesting new features, and not having billing problems. This fits the \"general_question\" category as it's a \"how-to question\" or \"clarification\" about company policies.\n\n3. **What is the impact?** While this involves sensitive data and security considerations, there is no system outage, broken functionality, or urgent problem. This is a pre-sales or due diligence inquiry that needs a response but doesn't indicate any current operational issues. The impact is \"low\" as it's essentially a policy clarification question.\n\n4. **Confidence level:** I'm very confident this is a general question about company policies rather than any of the other categories. The language is clearly asking for information (\"needs to understand\", \"how long is data stored\", \"do you offer options\") rather than reporting problems or requesting changes."
+    },
+    "escalated": false,
+    "escalation_detail": {
+      "action": "auto-handle",
+      "reason": "Within automated handling thresholds."
+    },
+    "specialist_output": "Hi Nina,\n\nThank you for reaching out with this important question! I completely understand your security team's need for clarity on our data retention practices, especially when dealing with sensitive client information.\n\nHere's what you need to know about our data retention policy:\n\n**Account Closure & Data Storage:**\nWhen an account is closed, we retain data for 30 days to allow for account recovery if needed. After this period, all account data is permanently deleted from our systems, including backups.\n\n**Data Deletion on Request:**\nYes, we absolutely offer data deletion options! You can request immediate data deletion at any time, even before the standard 30-day retention period. Our [Account Deletion guide](/docs/account/delete) walks through the complete process for permanently deleting your account and all associated data.\n\nFor ongoing data management while your account is active, you can also review our [Managing Your Account documentation](/docs/account/manage), which covers how to update and control your data settings.\n\nI'd be happy to connect you directly with our Security Team for a more detailed discussion about our data handling practices, or provide you with our formal Data Processing Agreement if that would be helpful for your evaluation process.\n\nPlease don't hesitate to reach out if you have any other questions as you evaluate our platform!\n\nBest regards,  \nCustomer Success Team",
+    "tools_called": [
+      "identify_topic",
+      "assess_complexity",
+      "find_documentation",
+      "generate_response"
+    ],
+    "processing_ms": 25129
+  },
+  {
+    "request": {
+      "id": 5,
+      "name": "Kevin Phillips",
+      "email": "kevin.phillips27@yahoo.com",
+      "category": "general_question",
+      "subject": "What file formats does the import support?",
+      "message": "I have customer data in various formats — Excel, CSV, and a Google Sheets export. Before I spend time converting everything, could you tell me exactly which file formats the import tool supports? Also, is there a maximum file size limit?",
+      "timestamp": "2025-07-15T20:23:00"
+    },
+    "classification": {
+      "category": "general_question",
+      "confidence": 0.95,
+      "impact": "low",
+      "reasoning": "Let me analyze this request step by step:\n\n1. **What is the customer describing?** Kevin is asking about supported file formats for the import tool and file size limits. He mentions having data in Excel, CSV, and Google Sheets formats and wants to know compatibility before converting files.\n\n2. **Is this a problem or a question?** This is clearly an informational question. Kevin isn't reporting that something is broken - he's asking for documentation/clarification about product capabilities before taking action.\n\n3. **What category fits best?** This is a \"general_question\" - Kevin needs information about how to use existing functionality (the import tool) and its specifications. He's not requesting new features, not reporting bugs, and not asking about billing.\n\n4. **What's the impact?** This is a low-impact request. Kevin is proactively seeking information to use the product effectively, but nothing is broken or blocking him. This is a straightforward how-to/informational query that can likely be answered with existing documentation.\n\n5. **Confidence level?** I'm very confident (0.95) this is a general question. The language is clearly asking for information (\"could you tell me exactly which file formats\") rather than reporting problems or requesting enhancements."
+    },
+    "escalated": false,
+    "escalation_detail": {
+      "action": "auto-handle",
+      "reason": "Within automated handling thresholds."
+    },
+    "specialist_output": "Hi Kevin,\n\nThanks for reaching out! I'm happy to help you understand our import capabilities before you start preparing your data.\n\nOur import tool supports the following file formats:\n- **CSV files** (.csv) - fully supported\n- **Excel files** (.xlsx and .xls) - fully supported  \n- **Google Sheets exports** - yes, these work great when exported as CSV or Excel format\n\nThe maximum file size limit is 50MB per import. If you have larger files, you can split them into smaller batches or reach out to us for assistance with bulk imports.\n\nSince you're working with customer data from multiple sources, I'd recommend checking out our **Getting Started Guide** (/docs/onboarding/start), which includes a detailed section on data preparation and import best practices. You'll find tips on formatting your data for the smoothest import experience.\n\nOur **Video Tutorials** (/docs/onboarding/videos) also have a specific walkthrough of the import process that shows you exactly what to expect when uploading different file types.\n\nFeel free to reply if you have any questions about preparing your specific data files, or if you run into any issues during the import process. I'm here to help make your onboarding as smooth as possible!\n\nBest regards,\nCustomer Success Team",
+    "tools_called": [
+      "identify_topic",
+      "assess_complexity",
+      "find_documentation",
+      "generate_response"
+    ],
+    "processing_ms": 30936
+  }
+]
