@@ -3,7 +3,8 @@
     "allow": [
       "Skill(claude-api)",
       "Bash(python generate_requests.py)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(python *)"
     ]
   }
 }
