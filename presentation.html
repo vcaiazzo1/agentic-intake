@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic Intake</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080d14;
+    --surface: #0d1520;
+    --surface2: #111d2e;
+    --border: rgba(99,179,255,0.12);
+    --accent: #3b9eff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --accent5: #ef4444;
+    --text: #e2eaf4;
+    --muted: #6b8aaa;
+    --gradient: linear-gradient(135deg, #3b9eff, #7c3aed);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  /* ── DECK ── */
+  #deck {
+    width: 100%; height: 100%;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 6rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(60px);
+    transition: opacity 0.45s cubic-bezier(.4,0,.2,1), transform 0.45s cubic-bezier(.4,0,.2,1);
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+  .slide.prev {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ── SLIDE NUMBER ── */
+  #slide-counter {
+    position: fixed;
+    bottom: 2rem;
+    right: 2.5rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+    z-index: 100;
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--gradient);
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    z-index: 100;
+    box-shadow: 0 0 12px rgba(59,158,255,0.5);
+  }
+
+  /* ── NAV HINTS ── */
+  #nav-hints {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 100;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    opacity: 0.4;
+    transition: opacity 0.3s, background 0.3s, transform 0.3s;
+  }
+  .dot.active-dot {
+    background: var(--accent);
+    opacity: 1;
+    transform: scale(1.4);
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.9rem;
+  }
+  .title-xl {
+    font-size: clamp(2.2rem, 4vw, 3.6rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+  .title-lg {
+    font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+  .title-md {
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .gradient-text {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .body {
+    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    font-weight: 400;
+    line-height: 1.7;
+    color: #a8bdd4;
+    max-width: 72ch;
+  }
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+  }
+
+  /* ── CARDS & SURFACES ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.6rem 2rem;
+  }
+  .card-sm {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.9rem;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .pill-blue  { background: rgba(59,158,255,0.12); color: #70b8ff; border: 1px solid rgba(59,158,255,0.2); }
+  .pill-green { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+  .pill-amber { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+  .pill-red   { background: rgba(239,68,68,0.12);  color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+  .pill-purple{ background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.2); }
+
+  /* ── GRID HELPERS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; width: 100%; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; width: 100%; }
+
+  /* ══════════════════════════════════════
+     SLIDE 1 — TITLE
+  ══════════════════════════════════════ */
+  #s1 { text-align: center; }
+  #s1 .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1.1rem;
+    border: 1px solid rgba(59,158,255,0.25);
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    background: rgba(59,158,255,0.07);
+  }
+  #s1 .eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  #s1 .subtitle {
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    color: var(--muted);
+    font-weight: 400;
+    margin-top: 1.5rem;
+    letter-spacing: 0.01em;
+  }
+  #s1 .meta {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+  }
+  #s1 .stat-block {
+    text-align: center;
+  }
+  #s1 .stat-block .num {
+    font-size: 2rem;
+    font-weight: 800;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  #s1 .stat-block .lbl {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  #s1 .divider {
+    width: 1px; background: var(--border); height: 40px; align-self: center;
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 2 — THE PROBLEM
+  ══════════════════════════════════════ */
+  #s2 .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.2rem;
+    margin-top: 2.5rem;
+    width: 100%;
+  }
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.8rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .problem-card .icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+  }
+  .problem-card h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .problem-card p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .problem-card .impact {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: 6px;
+    width: fit-content;
+    margin-top: auto;
+  }
+  .impact-red   { background: rgba(239,68,68,0.15); color: #f87171; }
+  .impact-amber { background: rgba(245,158,11,0.15); color: #fbbf24; }
+  .impact-purple{ background: rgba(124,58,237,0.15); color: #a78bfa; }
+  .hero-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+  .hero-stat .big {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--accent5);
+    line-height: 1;
+  }
+  .hero-stat .unit {
+    font-size: 1rem;
+    color: var(--muted);
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 3 — THE SOLUTION
+  ══════════════════════════════════════ */
+  #s3 .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 2.5rem;
+    width: 100%;
+    justify-content: center;
+  }
+  .flow-node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.4rem;
+    text-align: center;
+    min-width: 120px;
+    position: relative;
+  }
+  .flow-node .fn-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+  .flow-node .fn-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .flow-node.accent-blue  { border-color: rgba(59,158,255,0.35); box-shadow: 0 0 20px rgba(59,158,255,0.08); }
+  .flow-node.accent-purple{ border-color: rgba(124,58,237,0.35); box-shadow: 0 0 20px rgba(124,58,237,0.08); }
+  .flow-node.accent-green { border-color: rgba(16,185,129,0.35); box-shadow: 0 0 20px rgba(16,185,129,0.08); }
+  .flow-node.accent-amber { border-color: rgba(245,158,11,0.35); box-shadow: 0 0 20px rgba(245,158,11,0.08); }
+  .flow-arrow {
+    font-size: 1.1rem;
+    color: var(--muted);
+    padding: 0 0.4rem;
+    flex-shrink: 0;
+  }
+  #s3 .benefits {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+    width: 100%;
+  }
+  .benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 1rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .benefit .ico { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .benefit h4 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.2rem; }
+  .benefit p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+  /* ══════════════════════════════════════
+     SLIDE 4 — ARCHITECTURE
+  ══════════════════════════════════════ */
+  #s4 .arch-wrap {
+    width: 100%;
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    align-items: center;
+  }
+  .arch-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .arch-box {
+    border-radius: 10px;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid;
+    white-space: nowrap;
+    position: relative;
+  }
+  .ab-input   { background: rgba(99,179,255,0.08); border-color: rgba(99,179,255,0.3); color: #93c5fd; }
+  .ab-coord   { background: rgba(59,158,255,0.1);  border-color: rgba(59,158,255,0.35); color: #60a5fa; }
+  .ab-escl    { background: rgba(245,158,11,0.1);  border-color: rgba(245,158,11,0.3); color: #fbbf24; }
+  .ab-spec    { background: rgba(16,185,129,0.1);  border-color: rgba(16,185,129,0.3); color: #34d399; min-width: 90px; }
+  .ab-tools   { background: rgba(124,58,237,0.1);  border-color: rgba(124,58,237,0.3); color: #a78bfa; }
+  .ab-output  { background: rgba(239,68,68,0.1);   border-color: rgba(239,68,68,0.3);  color: #f87171; }
+  .ab-hook    { background: rgba(245,158,11,0.07); border-color: rgba(245,158,11,0.2); color: #fbbf24; font-size: 0.7rem; }
+  .arch-arrow { color: var(--muted); font-size: 0.9rem; flex-shrink: 0; }
+  .arch-down  { color: var(--muted); font-size: 0.85rem; text-align: center; line-height: 1; padding: 0.15rem 0; }
+  .arch-sub   { font-size: 0.65rem; font-weight: 400; opacity: 0.7; display: block; margin-top: 0.15rem; }
+  .arch-specialists {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .hook-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    padding-right: 6rem;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 5 — COORDINATOR
+  ══════════════════════════════════════ */
+  #s5 .coord-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+    margin-top: 2rem;
+    align-items: start;
+  }
+  .code-block {
+    background: #050a10;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem 1.6rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    line-height: 1.75;
+    color: #a8bdd4;
+    overflow: auto;
+  }
+  .code-block .kw  { color: #7c3aed; }
+  .code-block .str { color: #10b981; }
+  .code-block .num { color: #f59e0b; }
+  .code-block .cmt { color: #3d566e; }
+  .code-block .key { color: #60a5fa; }
+  .feature-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+  .feature-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .feature-list li .fi { font-size: 1.1rem; flex-shrink: 0; }
+  .feature-list li .ft { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+  .feature-list li .fd { font-size: 0.8rem; color: var(--muted); margin-top: 0.15rem; }
+
+  /* ══════════════════════════════════════
+     SLIDE 6 — SPECIALISTS
+  ══════════════════════════════════════ */
+  #s6 .spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem;
+    margin-top: 2rem;
+    width: 100%;
+  }
+  .spec-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.4rem 1.6rem;
+  }
+  .spec-card .sc-header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+  }
+  .sc-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .ic-blue   { background: rgba(59,158,255,0.15);  }
+  .ic-green  { background: rgba(16,185,129,0.15); }
+  .ic-amber  { background: rgba(245,158,11,0.15); }
+  .ic-purple { background: rgba(124,58,237,0.15); }
+  .spec-card h3 { font-size: 0.95rem; font-weight: 700; }
+  .spec-card .tools-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .tool-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #7ba7cc;
+  }
+  .tool-item::before {
+    content: '▸';
+    color: var(--accent);
+    font-size: 0.6rem;
+    flex-shrink: 0;
+  }
+  .tool-item.last { color: #34d399; }
+  .tool-item.last::before { color: #10b981; }
+
+  /* ══════════════════════════════════════
+     SLIDE 7 — PRETOOLUSE HOOK
+  ══════════════════════════════════════ */
+  #s7 .hook-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+    width: 100%;
+    align-items: start;
+  }
+  .hook-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .hook-step {
+    display: flex;
+    gap: 1rem;
+    position: relative;
+  }
+  .hook-step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 36px;
+    bottom: -8px;
+    width: 1px;
+    background: var(--border);
+  }
+  .hs-num {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+  .hs-body { padding-bottom: 1.4rem; }
+  .hs-title { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+  .hs-desc  { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .log-sample {
+    background: #050a10;
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1.8;
+    color: #7ba7cc;
+    overflow: auto;
+  }
+  .log-sample .lk { color: #fbbf24; }
+  .log-sample .lv { color: #34d399; }
+  .log-sample .lt { color: #a78bfa; }
+  .log-sample .lr { color: #f87171; }
+
+  /* ══════════════════════════════════════
+     SLIDE 8 — ADVERSARIAL EVAL
+  ══════════════════════════════════════ */
+  #s8 .eval-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 2rem;
+    margin-top: 2rem;
+    width: 100%;
+    align-items: start;
+  }
+  .big-metric {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.6rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .big-metric .bm-val {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .big-metric .bm-lbl {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+  .metric-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+  .metric-sm {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    text-align: center;
+  }
+  .metric-sm .msv { font-size: 1.6rem; font-weight: 800; line-height: 1; margin-bottom: 0.3rem; }
+  .metric-sm .msl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .strat-table { width: 100%; border-collapse: collapse; }
+  .strat-table th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 0.5rem 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .strat-table td {
+    padding: 0.75rem 0.8rem;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(99,179,255,0.05);
+  }
+  .strat-table tr:last-child td { border-bottom: none; }
+  .bar-wrap { position: relative; height: 6px; background: rgba(255,255,255,0.06); border-radius: 9999px; overflow: hidden; }
+  .bar-fill  { position: absolute; left: 0; top: 0; height: 100%; border-radius: 9999px; }
+
+  /* ══════════════════════════════════════
+     SLIDE 9 — INVENTIVE CLAUDE CODE USE
+  ══════════════════════════════════════ */
+  #s9 .inv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-top: 2rem;
+    width: 100%;
+  }
+  .inv-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem 1.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .inv-card .ic-num {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .inv-card h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); }
+  .inv-card p  { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+  .inv-card .prompt-quote {
+    margin-top: 0.6rem;
+    padding: 0.75rem 1rem;
+    background: #050a10;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: #7ba7cc;
+    line-height: 1.5;
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 10 — WHAT'S NEXT
+  ══════════════════════════════════════ */
+  #s10 .next-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+    width: 100%;
+  }
+  .next-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .next-card:hover {
+    border-color: rgba(59,158,255,0.3);
+    box-shadow: 0 0 30px rgba(59,158,255,0.06);
+  }
+  .next-card .nc-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 0.4rem;
+  }
+  .next-card h3 { font-size: 1.05rem; font-weight: 700; }
+  .next-card p  { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+  .next-card .nc-tag {
+    margin-top: auto;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 11 — THANK YOU
+  ══════════════════════════════════════ */
+  #s11 { text-align: center; }
+  #s11 .ty-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    width: 100%;
+    max-width: 700px;
+  }
+  .ty-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    text-align: center;
+  }
+  .ty-stat .tsv {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .ty-stat .tsl {
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  #s11 .repo-link {
+    margin-top: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.8rem 1.8rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(59,158,255,0.3);
+    background: rgba(59,158,255,0.07);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  #s11 .repo-link:hover {
+    background: rgba(59,158,255,0.12);
+    border-color: rgba(59,158,255,0.5);
+  }
+  #s11 .author {
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  /* ── GLOW ORBS (decorative) ── */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.18;
+  }
+  .orb-blue   { background: #3b9eff; }
+  .orb-purple { background: #7c3aed; }
+  .orb-green  { background: #10b981; }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="slide-counter">1 / 11</div>
+<div id="nav-hints"></div>
+
+<div id="deck">
+
+  <!-- ══════ SLIDE 1 ══════ -->
+  <section class="slide active" id="s1">
+    <div class="orb orb-blue"  style="width:500px;height:500px;top:-150px;right:-100px;"></div>
+    <div class="orb orb-purple" style="width:400px;height:400px;bottom:-150px;left:-80px;"></div>
+    <div class="eyebrow">AWS Bedrock · Multi-Agent · Claude Sonnet 4</div>
+    <h1 class="title-xl" style="text-align:center;max-width:800px;">
+      Agentic Intake —<br>
+      <span class="gradient-text">200 requests/day,<br>zero human triage</span>
+    </h1>
+    <p class="subtitle">A coordinator → escalation → specialist pipeline that classifies,<br>routes, and resolves support requests end-to-end.</p>
+    <div class="meta">
+      <div class="stat-block"><div class="num">4</div><div class="lbl">Specialist Agents</div></div>
+      <div class="divider"></div>
+      <div class="stat-block"><div class="num">18</div><div class="lbl">Domain Tools</div></div>
+      <div class="divider"></div>
+      <div class="stat-block"><div class="num">100%</div><div class="lbl">Acceptable Accuracy</div></div>
+      <div class="divider"></div>
+      <div class="stat-block"><div class="num">0%</div><div class="lbl">False Confidence</div></div>
+    </div>
+  </section>
+
+  <!-- ══════ SLIDE 2 ══════ -->
+  <section class="slide" id="s2">
+    <div class="orb orb-purple" style="width:400px;height:400px;top:-80px;right:-60px;"></div>
+    <div class="label">The Problem</div>
+    <h2 class="title-lg">Manual triage doesn't scale.</h2>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="icon">⏱️</div>
+        <h3>It's slow</h3>
+        <p>Every request waits in a queue. A human reads it, decides where it goes, re-routes it. Average triage time: 8–15 minutes per ticket.</p>
+        <div class="impact impact-red">~12 min / ticket</div>
+      </div>
+      <div class="problem-card">
+        <div class="icon">🎲</div>
+        <h3>It's inconsistent</h3>
+        <p>Different agents classify the same request differently. Billing complaints land in the wrong queue. Critical bugs get treated as feature requests.</p>
+        <div class="impact impact-amber">~20% mis-routing rate</div>
+      </div>
+      <div class="problem-card">
+        <div class="icon">📈</div>
+        <h3>It doesn't scale</h3>
+        <p>Doubling request volume means doubling headcount. Weekend spikes go unhandled until Monday. Escalation paths are manual and tribal.</p>
+        <div class="impact impact-purple">Linear cost growth</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:1.5rem;">
+      <p class="body" style="font-size:0.9rem;">The result: delayed responses, unhappy customers, and a support team spending most of its time on <em>routing</em>, not <em>resolving</em>.</p>
+    </div>
+  </section>
+
+  <!-- ══════ SLIDE 3 ══════ -->
+  <section class="slide" id="s3">
+    <div class="orb orb-blue" style="width:400px;height:400px;bottom:-80px;left:-60px;"></div>
+    <div class="label">The Solution</div>
+    <h2 class="title-lg">A three-stage agentic pipeline.</h2>
+    <div class="flow" style="flex-wrap:wrap;gap:0.4rem 0;">
+      <div class="flow-node accent-blue">
+        <div class="fn-label">Stage 1</div>
+        <div class="fn-name">Coordinator</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent-amber">
+        <div class="fn-label">Stage 2</div>
+        <div class="fn-name">Escalation</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent-green">
+        <div class="fn-label">Stage 3</div>
+        <div class="fn-name">Specialist</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:rgba(168,189,212,0.2);">
+        <div class="fn-label">Output</div>
+        <div class="fn-name">Resolution</div>
+      </div>
+    </div>
+    <div class="benefits">
+      <div class="benefit">
+        <div class="ico">⚡</div>
+        <div>
+          <h4>Instant classification</h4>
+          <p>Forced tool-use extracts category, confidence, impact, and reasoning in a single API call.</p>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="ico">🛡️</div>
+        <div>
+          <h4>Automatic escalation</h4>
+          <p>Three deterministic rules route critical, low-confidence, and high-risk billing cases to humans.</p>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="ico">🤖</div>
+        <div>
+          <h4>Domain specialists</h4>
+          <p>Each specialist runs an independent tool-use loop with 4–5 purpose-built tools to produce actionable responses.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SLIDE 4 ══════ -->
+  <section class="slide" id="s4">
+    <div class="orb orb-purple" style="width:350px;height:350px;top:-60px;left:-60px;opacity:0.12;"></div>
+    <div class="label">Architecture</div>
+    <h2 class="title-md" style="margin-bottom:0.3rem;">Full pipeline, end-to-end</h2>
+    <div class="arch-wrap">
+      <!-- Row 1: Input -->
+      <div class="arch-row">
+        <div class="arch-box ab-input">
+          Request
+          <span class="arch-sub">id · name · email · subject · message · timestamp</span>
+        </div>
+      </div>
+      <div class="arch-down">↓</div>
+      <!-- Row 2: Coordinator -->
+      <div class="arch-row">
+        <div class="arch-box ab-coord" style="min-width:280px;">
+          Coordinator
+          <span class="arch-sub">classify_request (forced tool call) → category · confidence · impact · reasoning</span>
+        </div>
+      </div>
+      <div class="arch-down">↓</div>
+      <!-- Row 3: Escalation -->
+      <div class="arch-row">
+        <div class="arch-box ab-escl" style="min-width:340px;">
+          Escalation System
+          <span class="arch-sub">confidence &lt; 0.6 · impact == critical · billing + high → escalate or auto-handle</span>
+        </div>
+      </div>
+      <div class="arch-down">↓</div>
+      <!-- Row 4: Specialists -->
+      <div class="arch-row">
+        <div class="arch-specialists">
+          <div class="arch-box ab-spec">Bug<span class="arch-sub">4 tools</span></div>
+          <div class="arch-arrow">·</div>
+          <div class="arch-box ab-spec">Feature<span class="arch-sub">4 tools</span></div>
+          <div class="arch-arrow">·</div>
+          <div class="arch-box ab-spec">Billing<span class="arch-sub">5 tools</span></div>
+          <div class="arch-arrow">·</div>
+          <div class="arch-box ab-spec">General<span class="arch-sub">4 tools</span></div>
+        </div>
+      </div>
+      <!-- Hook annotation -->
+      <div class="arch-row" style="justify-content:flex-end;padding-right:3rem;gap:0.4rem;margin-top:-0.3rem;">
+        <div style="font-size:0.65rem;color:var(--muted);">PreToolUse hook on generate_bug_ticket · flag_for_human</div>
+        <div class="arch-box ab-hook" style="padding:0.3rem 0.7rem;">→ audit_log.jsonl</div>
+      </div>
+      <div class="arch-down">↓</div>
+      <!-- Row 5: Output -->
+      <div class="arch-row">
+        <div class="arch-box ab-output" style="min-width:420px;">
+          Output
+          <span class="arch-sub">request · classification · escalated · escalation_detail · specialist_output · tools_called · processing_ms</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SLIDE 5 ══════ -->
+  <section class="slide" id="s5">
+    <div class="orb orb-blue" style="width:300px;height:300px;top:-40px;right:-40px;opacity:0.12;"></div>
+    <div class="label">The Coordinator</div>
+    <h2 class="title-lg">Structured classification, every time.</h2>
+    <div class="coord-layout">
+      <div class="code-block">
+<span class="cmt"># Forced tool_choice — Claude MUST call this</span>
+<span class="key">tool_choice</span> = {<span class="str">"type"</span>: <span class="str">"tool"</span>, <span class="str">"name"</span>: <span class="str">"classify_request"</span>}
+
+<span class="cmt"># Tool schema (excerpt)</span>
+{
+  <span class="key">"name"</span>: <span class="str">"classify_request"</span>,
+  <span class="key">"input_schema"</span>: {
+    <span class="key">"category"</span>: <span class="str">"bug_report | feature_request
+              | billing_issue | general_question"</span>,
+    <span class="key">"confidence"</span>: <span class="str">"float  0.0 – 1.0"</span>,
+    <span class="key">"impact"</span>:     <span class="str">"low | medium | high | critical"</span>,
+    <span class="key">"reasoning"</span>:  <span class="str">"step-by-step explanation"</span>
+  }
+}
+
+<span class="cmt"># Result → passed verbatim to specialist</span>
+ClassificationResult(
+  category   = <span class="str">"bug_report"</span>,
+  confidence = <span class="num">0.92</span>,
+  impact     = <span class="str">"high"</span>,
+  reasoning  = <span class="str">"Login failure after password reset..."</span>
+)</div>
+      <ul class="feature-list">
+        <li>
+          <div class="fi">🔒</div>
+          <div>
+            <div class="ft">Forced tool call</div>
+            <div class="fd"><span class="mono">tool_choice: {type: "tool"}</span> — classification is always structured, never free-form prose.</div>
+          </div>
+        </li>
+        <li>
+          <div class="fi">🎯</div>
+          <div>
+            <div class="ft">Confidence scoring</div>
+            <div class="fd">0.0–1.0 float. Below 0.6 triggers automatic escalation to a human.</div>
+          </div>
+        </li>
+        <li>
+          <div class="fi">⚡</div>
+          <div>
+            <div class="ft">Impact assessment</div>
+            <div class="fd">critical impact always escalates, regardless of confidence.</div>
+          </div>
+        </li>
+        <li>
+          <div class="fi">📋</div>
+          <div>
+            <div class="ft">Reasoning passed downstream</div>
+            <div class="fd">Specialist receives the coordinator's full reasoning so it never re-classifies.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════ SLIDE 6 ══════ -->
+  <section class="slide" id="s6">
+    <div class="orb orb-green" style="width:350px;height:350px;bottom:-60px;right:-40px;opacity:0.1;"></div>
+    <div class="label">The Specialists</div>
+    <h2 class="title-lg">Four agents. One job each.</h2>
+    <div class="spec-grid">
+      <div class="spec-card">
+        <div class="sc-header">
+          <div class="sc-icon ic-blue">🐛</div>
+          <h3>BugReportSpecialist</h3>
+        </div>
+        <div class="tools-list">
+          <div class="tool-item">analyze_severity()</div>
+          <div class="tool-item">extract_reproduction_steps()</div>
+          <div class="tool-item">check_known_issues()</div>
+          <div class="tool-item last">generate_bug_ticket() ← hook</div>
+        </div>
+      </div>
+      <div class="spec-card">
+        <div class="sc-header">
+          <div class="sc-icon ic-green">✨</div>
+          <h3>FeatureRequestSpecialist</h3>
+        </div>
+        <div class="tools-list">
+          <div class="tool-item">assess_complexity()</div>
+          <div class="tool-item">score_business_value()</div>
+          <div class="tool-item">find_similar_requests()</div>
+          <div class="tool-item last">generate_feature_brief()</div>
+        </div>
+      </div>
+      <div class="spec-card">
+        <div class="sc-header">
+          <div class="sc-icon ic-amber">💳</div>
+          <h3>BillingSpecialist</h3>
+        </div>
+        <div class="tools-list">
+          <div class="tool-item">detect_urgency()</div>
+          <div class="tool-item">identify_issue_type()</div>
+          <div class="tool-item">check_billing_policy()</div>
+          <div class="tool-item">flag_for_human() ← hook</div>
+          <div class="tool-item last">generate_billing_resolution()</div>
+        </div>
+      </div>
+      <div class="spec-card">
+        <div class="sc-header">
+          <div class="sc-icon ic-purple">💬</div>
+          <h3>GeneralQuestionSpecialist</h3>
+        </div>
+        <div class="tools-list">
+          <div class="tool-item">identify_topic()</div>
+          <div class="tool-item">assess_complexity()</div>
+          <div class="tool-item">find_documentation()</div>
+          <div class="tool-item last">generate_response()</div>
+        </div>
+      </div>
+    </div>
+    <p class="body" style="font-size:0.82rem;margin-top:1rem;text-align:center;">Each specialist runs an independent <span class="mono">_run_agent_loop</span> — the last tool synthesises all prior outputs into a final customer response.</p>
+  </section>
+
+  <!-- ══════ SLIDE 7 ══════ -->
+  <section class="slide" id="s7">
+    <div class="orb orb-amber" style="width:350px;height:350px;top:-50px;right:-50px;opacity:0.08;background:#f59e0b;"></div>
+    <div class="label">The PreToolUse Hook</div>
+    <h2 class="title-lg">Audit trail for high-risk actions.</h2>
+    <div class="hook-layout">
+      <div class="hook-steps">
+        <div class="hook-step">
+          <div class="hs-num">1</div>
+          <div class="hs-body">
+            <div class="hs-title">Intercept</div>
+            <div class="hs-desc">Fires synchronously before <span class="mono">generate_bug_ticket</span> or <span class="mono">flag_for_human</span> execute. Unwatched tools pass through unaffected.</div>
+          </div>
+        </div>
+        <div class="hook-step">
+          <div class="hs-num">2</div>
+          <div class="hs-body">
+            <div class="hs-title">Classify Risk</div>
+            <div class="hs-desc"><span class="mono">flag_for_human</span> → <span style="color:#f87171;font-weight:700;">HIGH_RISK</span>. <span class="mono">generate_bug_ticket</span> with <span class="mono">severity=critical</span> → <span style="color:#f87171;font-weight:700;">CRITICAL</span>, otherwise <span style="color:#34d399;font-weight:700;">INFO</span>.</div>
+          </div>
+        </div>
+        <div class="hook-step">
+          <div class="hs-num">3</div>
+          <div class="hs-body">
+            <div class="hs-title">Append to audit log</div>
+            <div class="hs-desc">One JSONL line written to <span class="mono">audit_log.jsonl</span> — timestamp, tool, input, risk level, reason. Immutable append-only record.</div>
+          </div>
+        </div>
+        <div class="hook-step">
+          <div class="hs-num">4</div>
+          <div class="hs-body">
+            <div class="hs-title">Return allowed: true</div>
+            <div class="hs-desc">Tool always executes. In production: check risk level, return <span class="mono">allowed: false</span> to block. The pattern, not the policy, is the demo.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.6rem;">audit_log.jsonl (sample entry)</div>
+        <div class="log-sample">{<br>
+  <span class="lk">"timestamp"</span>: <span class="lv">"2026-04-28T09:14:22Z"</span>,<br>
+  <span class="lk">"tool"</span>:      <span class="lt">"generate_bug_ticket"</span>,<br>
+  <span class="lk">"input"</span>: {<br>
+    <span class="lk">"severity"</span>:    <span class="lr">"critical"</span>,<br>
+    <span class="lk">"component"</span>:   <span class="lv">"auth-service"</span>,<br>
+    <span class="lk">"title"</span>:      <span class="lv">"Login failure after reset"</span><br>
+  },<br>
+  <span class="lk">"risk_level"</span>: <span class="lr">"CRITICAL"</span>,<br>
+  <span class="lk">"reason"</span>:    <span class="lv">"critical severity bug ticket"</span>,<br>
+  <span class="lk">"allowed"</span>:   <span class="lt">true</span><br>
+}</div>
+        <div style="margin-top:1rem;display:flex;gap:0.6rem;flex-wrap:wrap;">
+          <span class="pill pill-amber">append-only</span>
+          <span class="pill pill-red">high-risk intercepted</span>
+          <span class="pill pill-blue">fully extensible</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SLIDE 8 ══════ -->
+  <section class="slide" id="s8">
+    <div class="orb orb-green" style="width:350px;height:350px;bottom:-80px;left:-60px;opacity:0.1;"></div>
+    <div class="label">Adversarial Evaluation</div>
+    <h2 class="title-lg">Tested against 15 hand-crafted edge cases.</h2>
+    <div class="eval-layout">
+      <div>
+        <div class="big-metric">
+          <div class="bm-val gradient-text">100%</div>
+          <div class="bm-lbl">Acceptable Accuracy</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-sm">
+            <div class="msv" style="color:#60a5fa;">80%</div>
+            <div class="msl">Strict Accuracy</div>
+          </div>
+          <div class="metric-sm">
+            <div class="msv" style="color:#34d399;">0%</div>
+            <div class="msl">False Confidence</div>
+          </div>
+          <div class="metric-sm">
+            <div class="msv" style="color:#fbbf24;">81.3%</div>
+            <div class="msl">Avg Confidence</div>
+          </div>
+          <div class="metric-sm">
+            <div class="msv" style="color:#a78bfa;">15</div>
+            <div class="msl">Total Cases</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <table class="strat-table">
+          <thead>
+            <tr>
+              <th>Case Type</th>
+              <th>Strict</th>
+              <th>Acceptable</th>
+              <th>Avg Conf.</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="pill pill-amber" style="font-size:0.7rem;">Ambiguous</span></td>
+              <td style="color:#fbbf24;font-weight:700;">60%</td>
+              <td style="color:#34d399;font-weight:700;">100%</td>
+              <td style="color:#a8bdd4;">83%</td>
+              <td style="width:80px;">
+                <div class="bar-wrap"><div class="bar-fill" style="width:60%;background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="pill pill-blue" style="font-size:0.7rem;">Misleading Subject</span></td>
+              <td style="color:#34d399;font-weight:700;">100%</td>
+              <td style="color:#34d399;font-weight:700;">100%</td>
+              <td style="color:#a8bdd4;">94%</td>
+              <td>
+                <div class="bar-wrap"><div class="bar-fill" style="width:100%;background:linear-gradient(90deg,#3b9eff,#10b981);"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="pill pill-purple" style="font-size:0.7rem;">Edge Cases</span></td>
+              <td style="color:#a78bfa;font-weight:700;">80%</td>
+              <td style="color:#34d399;font-weight:700;">100%</td>
+              <td style="color:#a8bdd4;">67%</td>
+              <td>
+                <div class="bar-wrap"><div class="bar-fill" style="width:80%;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:1.2rem;display:flex;flex-direction:column;gap:0.6rem;">
+          <div class="card-sm" style="font-size:0.8rem;">
+            <span style="color:#34d399;font-weight:700;">★</span> 5/5 on misleading subjects — reads body, ignores subject-line noise
+          </div>
+          <div class="card-sm" style="font-size:0.8rem;">
+            <span style="color:#60a5fa;font-weight:700;">★</span> Correctly classified French message & all-caps rage complaint
+          </div>
+          <div class="card-sm" style="font-size:0.8rem;">
+            <span style="color:#a78bfa;font-weight:700;">★</span> Zero false-confidence — always hedges on genuinely ambiguous cases
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SLIDE 9 ══════ -->
+  <section class="slide" id="s9">
+    <div class="orb orb-blue" style="width:300px;height:300px;top:-50px;left:-50px;opacity:0.1;"></div>
+    <div class="label">Most Inventive Claude Code Use</div>
+    <h2 class="title-lg">What we built — and how we built it.</h2>
+    <div class="inv-grid">
+      <div class="inv-card">
+        <div class="ic-num">01 / Agentic loops via prompt</div>
+        <h3>Full multi-agent architecture from a single prompt</h3>
+        <p>Coordinator, four specialists, escalation system, and pipeline wired together — each component generated in one focused Claude Code session with zero boilerplate from us.</p>
+        <div class="prompt-quote">"Build a coordinator.py that uses Claude's tool_use feature with a classify_request tool… Force the tool call with tool_choice…"</div>
+      </div>
+      <div class="inv-card">
+        <div class="ic-num">02 / adversarial eval design</div>
+        <h3>Adversarial evaluation harness</h3>
+        <p>We asked Claude Code to design the adversarial test cases <em>and</em> build the evaluation harness. It invented the ambiguous/misleading/edge-case taxonomy and wrote all 15 cases itself.</p>
+        <div class="prompt-quote">"Build an adversarial evaluation harness… compute strict accuracy, acceptable accuracy, false-confidence rate, and stratified breakdown by case type."</div>
+      </div>
+      <div class="inv-card">
+        <div class="ic-num">03 / hook as python function</div>
+        <h3>PreToolUse hook wired into tool handlers</h3>
+        <p>Rather than a separate Claude Code hook, we asked Claude Code to implement the pattern as a Python decorator inside the tool handler closures — no runtime magic, fully testable.</p>
+        <div class="prompt-quote">"Add a pre_tool_use_hook that intercepts generate_bug_ticket and flag_for_human calls and appends a JSONL entry to audit_log.jsonl… Return allowed=True always."</div>
+      </div>
+      <div class="inv-card">
+        <div class="ic-num">04 / offline test suite</div>
+        <h3>Fully offline pytest suite via conftest injection</h3>
+        <p>Claude Code injected a fake <span class="mono">bedrock_client</span> module into <span class="mono">sys.modules</span> in <span class="mono">conftest.py</span> before any project code imported — no AWS credentials needed, zero flaky tests.</p>
+        <div class="prompt-quote">"Mock the bedrock_client entirely in conftest.py by injecting a fake module into sys.modules before imports, so no AWS credentials are needed."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SLIDE 10 ══════ -->
+  <section class="slide" id="s10">
+    <div class="orb orb-purple" style="width:350px;height:350px;bottom:-60px;right:-50px;opacity:0.1;"></div>
+    <div class="label">What's Next</div>
+    <h2 class="title-lg">Three improvements to ship next.</h2>
+    <div class="next-grid">
+      <div class="next-card">
+        <div class="nc-icon ic-blue">⚡</div>
+        <h3>Prompt caching + async pipeline</h3>
+        <p>Add <span class="mono">cache_control: {type: "ephemeral"}</span> to coordinator and specialist system prompts. Switch <span class="mono">pipeline.py</span> to <span class="mono">asyncio</span> with concurrent Bedrock calls. Expected: 60–70% latency reduction at scale.</p>
+        <div class="nc-tag" style="color:#60a5fa;">Performance</div>
+      </div>
+      <div class="next-card">
+        <div class="nc-icon ic-green">🔗</div>
+        <h3>Real tool integrations</h3>
+        <p>Replace mock handlers with live API calls: Jira for bug tickets, Stripe for billing lookups, Confluence for documentation search. The tool schema is already production-ready — only the implementations need to change.</p>
+        <div class="nc-tag" style="color:#34d399;">Integrations</div>
+      </div>
+      <div class="next-card">
+        <div class="nc-icon ic-amber">🔒</div>
+        <h3>Policy-enforcing hook</h3>
+        <p>Promote the <span class="mono">pre_tool_use_hook</span> from logging to enforcement: return <span class="mono">allowed: false</span> for <span class="mono">HIGH_RISK</span> actions, route to a human approval queue, and re-try once approved. Turns the audit trail into a real control plane.</p>
+        <div class="nc-tag" style="color:#fbbf24;">Safety</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SLIDE 11 ══════ -->
+  <section class="slide" id="s11">
+    <div class="orb orb-blue"   style="width:500px;height:500px;top:-150px;right:-100px;"></div>
+    <div class="orb orb-purple" style="width:400px;height:400px;bottom:-150px;left:-80px;"></div>
+    <div class="label">Thank you</div>
+    <h2 class="title-xl"><span class="gradient-text">Agentic Intake</span></h2>
+    <p class="body" style="text-align:center;margin-top:0.8rem;">A coordinator → escalation → specialist pipeline on AWS Bedrock.<br>Built end-to-end with Claude Code.</p>
+    <div class="ty-grid">
+      <div class="ty-stat">
+        <div class="tsv gradient-text">4</div>
+        <div class="tsl">Specialist Agents</div>
+      </div>
+      <div class="ty-stat">
+        <div class="tsv" style="color:#34d399;">100%</div>
+        <div class="tsl">Acceptable Accuracy</div>
+      </div>
+      <div class="ty-stat">
+        <div class="tsv" style="color:#f59e0b;">0%</div>
+        <div class="tsl">False Confidence</div>
+      </div>
+      <div class="ty-stat">
+        <div class="tsv" style="color:#a78bfa;">18</div>
+        <div class="tsl">Domain Tools</div>
+      </div>
+      <div class="ty-stat">
+        <div class="tsv" style="color:#60a5fa;">50</div>
+        <div class="tsl">Requests Processed</div>
+      </div>
+      <div class="ty-stat">
+        <div class="tsv" style="color:#f87171;">∞</div>
+        <div class="tsl">Scale Potential</div>
+      </div>
+    </div>
+    <a class="repo-link" href="https://github.com/vincenzo-caiazzo/agentic-intake" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      github.com/vincenzo-caiazzo/agentic-intake
+    </a>
+    <div class="author">vincenzo.caiazzo@accenture.com · Built with Claude Code on AWS Bedrock</div>
+  </section>
+
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.getElementById('slide-counter');
+  const progress = document.getElementById('progress');
+  const navHints = document.getElementById('nav-hints');
+  const TOTAL = slides.length;
+  let current = 0;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active-dot' : '');
+    d.addEventListener('click', () => goTo(i));
+    navHints.appendChild(d);
+  });
+
+  function goTo(n) {
+    if (n < 0 || n >= TOTAL || n === current) return;
+    const dir = n > current ? 1 : -1;
+    slides[current].classList.remove('active');
+    slides[current].classList.add(dir > 0 ? 'prev' : '');
+    setTimeout(() => slides[current < n ? current : n + (dir > 0 ? 0 : 1)].classList.remove('prev'), 450);
+    current = n;
+    slides[current].classList.add('active');
+    update();
+  }
+
+  function update() {
+    counter.textContent = `${current + 1} / ${TOTAL}`;
+    progress.style.width = `${((current + 1) / TOTAL) * 100}%`;
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active-dot', i === current);
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ')  { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                     { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(TOTAL - 1);
+  });
+
+  // Touch/swipe
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) goTo(dx < 0 ? current + 1 : current - 1);
+  }, { passive: true });
+
+  update();
+</script>
+</body>
+</html>
