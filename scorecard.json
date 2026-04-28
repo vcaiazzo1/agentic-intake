@@ -1,0 +1,354 @@
+{
+  "summary": {
+    "total_cases": 15,
+    "strict_correct": 12,
+    "acceptable_correct": 15,
+    "strict_accuracy": 0.8,
+    "acceptable_accuracy": 1.0,
+    "avg_confidence": 0.8133,
+    "false_confidence_rate": 0.0,
+    "high_confidence_threshold": 0.8
+  },
+  "precision_recall_per_category": {
+    "bug_report": {
+      "tp": 5,
+      "fp": 1,
+      "fn": 1,
+      "precision": 0.8333,
+      "recall": 0.8333
+    },
+    "feature_request": {
+      "tp": 4,
+      "fp": 1,
+      "fn": 1,
+      "precision": 0.8,
+      "recall": 0.8
+    },
+    "billing_issue": {
+      "tp": 1,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.5,
+      "recall": 1.0
+    },
+    "general_question": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.6667
+    }
+  },
+  "stratified_results": {
+    "ambiguous": {
+      "total": 5,
+      "strict_correct": 3,
+      "acceptable_correct": 5,
+      "strict_accuracy": 0.6,
+      "acceptable_accuracy": 1.0,
+      "avg_confidence": 0.83,
+      "false_confidence_count": 0
+    },
+    "misleading_subject": {
+      "total": 5,
+      "strict_correct": 5,
+      "acceptable_correct": 5,
+      "strict_accuracy": 1.0,
+      "acceptable_accuracy": 1.0,
+      "avg_confidence": 0.94,
+      "false_confidence_count": 0
+    },
+    "edge_case": {
+      "total": 5,
+      "strict_correct": 4,
+      "acceptable_correct": 5,
+      "strict_accuracy": 0.8,
+      "acceptable_accuracy": 1.0,
+      "avg_confidence": 0.67,
+      "false_confidence_count": 0
+    }
+  },
+  "raw_results": [
+    {
+      "id": 101,
+      "type": "ambiguous",
+      "subject": "No confirmation dialog before deleting records",
+      "notes": "Missing safety feature — could be read as either a missing feature or a design defect",
+      "expected_category": "feature_request",
+      "acceptable_categories": [
+        "feature_request",
+        "bug_report"
+      ],
+      "predicted_category": "feature_request",
+      "confidence": 0.95,
+      "impact": "medium",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 8377
+    },
+    {
+      "id": 102,
+      "type": "ambiguous",
+      "subject": "Missing timezone field in user profile API response",
+      "notes": "Could be a missing documented field (bug) or a genuinely absent feature",
+      "expected_category": "feature_request",
+      "acceptable_categories": [
+        "feature_request",
+        "bug_report"
+      ],
+      "predicted_category": "bug_report",
+      "confidence": 0.7,
+      "impact": "high",
+      "correct": false,
+      "acceptable_correct": true,
+      "high_confidence": false,
+      "false_confidence": false,
+      "elapsed_ms": 6816
+    },
+    {
+      "id": 103,
+      "type": "ambiguous",
+      "subject": "Dashboard always shows yesterday's numbers",
+      "notes": "Stale data — could be a caching bug or a missing real-time feature",
+      "expected_category": "bug_report",
+      "acceptable_categories": [
+        "bug_report",
+        "feature_request"
+      ],
+      "predicted_category": "bug_report",
+      "confidence": 0.9,
+      "impact": "medium",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 9415
+    },
+    {
+      "id": 104,
+      "type": "ambiguous",
+      "subject": "CSV export is missing several columns",
+      "notes": "Missing export columns — regression bug or unimplemented feature?",
+      "expected_category": "bug_report",
+      "acceptable_categories": [
+        "bug_report",
+        "feature_request"
+      ],
+      "predicted_category": "feature_request",
+      "confidence": 0.7,
+      "impact": "medium",
+      "correct": false,
+      "acceptable_correct": true,
+      "high_confidence": false,
+      "false_confidence": false,
+      "elapsed_ms": 7284
+    },
+    {
+      "id": 105,
+      "type": "ambiguous",
+      "subject": "Search results cannot be filtered by date range",
+      "notes": "Absent filter — almost certainly a feature gap, but phrased as potential oversight",
+      "expected_category": "feature_request",
+      "acceptable_categories": [
+        "feature_request",
+        "bug_report"
+      ],
+      "predicted_category": "feature_request",
+      "confidence": 0.9,
+      "impact": "medium",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 5984
+    },
+    {
+      "id": 201,
+      "type": "misleading_subject",
+      "subject": "Feature Request: Better login experience",
+      "notes": "Subject says feature_request but body is a critical login bug",
+      "expected_category": "bug_report",
+      "acceptable_categories": [
+        "bug_report"
+      ],
+      "predicted_category": "bug_report",
+      "confidence": 0.95,
+      "impact": "high",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 9820
+    },
+    {
+      "id": 202,
+      "type": "misleading_subject",
+      "subject": "Bug: Invoice download not working as expected",
+      "notes": "Subject says bug but the body is clearly a feature request for PDF export",
+      "expected_category": "feature_request",
+      "acceptable_categories": [
+        "feature_request"
+      ],
+      "predicted_category": "feature_request",
+      "confidence": 0.9,
+      "impact": "low",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 5356
+    },
+    {
+      "id": 203,
+      "type": "misleading_subject",
+      "subject": "General Question About Account Access Policies",
+      "notes": "Subject is benign but body describes a critical mass-lockout incident",
+      "expected_category": "bug_report",
+      "acceptable_categories": [
+        "bug_report"
+      ],
+      "predicted_category": "bug_report",
+      "confidence": 0.95,
+      "impact": "critical",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 8246
+    },
+    {
+      "id": 204,
+      "type": "misleading_subject",
+      "subject": "Billing Question - Urgent Payment Issue",
+      "notes": "Subject says billing but body is a pure API how-to question",
+      "expected_category": "general_question",
+      "acceptable_categories": [
+        "general_question"
+      ],
+      "predicted_category": "general_question",
+      "confidence": 0.95,
+      "impact": "low",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 5638
+    },
+    {
+      "id": 205,
+      "type": "misleading_subject",
+      "subject": "URGENT: Complete System Outage — Production Down",
+      "notes": "Alarmist outage subject but body is a casual dark-mode feature suggestion",
+      "expected_category": "feature_request",
+      "acceptable_categories": [
+        "feature_request"
+      ],
+      "predicted_category": "feature_request",
+      "confidence": 0.95,
+      "impact": "low",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 9923
+    },
+    {
+      "id": 301,
+      "type": "edge_case",
+      "subject": "Help",
+      "notes": "Empty message body — classifier must work with only the subject word 'Help'",
+      "expected_category": "general_question",
+      "acceptable_categories": [
+        "general_question",
+        "bug_report",
+        "feature_request",
+        "billing_issue"
+      ],
+      "predicted_category": "general_question",
+      "confidence": 0.3,
+      "impact": "low",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": false,
+      "false_confidence": false,
+      "elapsed_ms": 6228
+    },
+    {
+      "id": 302,
+      "type": "edge_case",
+      "subject": "Several things I wanted to bring up",
+      "notes": "Very long rambling message burying the core billing overcharge complaint among pleasantries",
+      "expected_category": "billing_issue",
+      "acceptable_categories": [
+        "billing_issue"
+      ],
+      "predicted_category": "billing_issue",
+      "confidence": 0.95,
+      "impact": "medium",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 9647
+    },
+    {
+      "id": 303,
+      "type": "edge_case",
+      "subject": "Impossible d'accéder à mon compte",
+      "notes": "Entire message is in French — login blocked + password reset emails not arriving",
+      "expected_category": "bug_report",
+      "acceptable_categories": [
+        "bug_report"
+      ],
+      "predicted_category": "bug_report",
+      "confidence": 0.9,
+      "impact": "high",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 6646
+    },
+    {
+      "id": 304,
+      "type": "edge_case",
+      "subject": "I CANNOT ACCESS MY ACCOUNT THIS IS UNACCEPTABLE",
+      "notes": "All-caps message — login broken after password reset, high urgency",
+      "expected_category": "bug_report",
+      "acceptable_categories": [
+        "bug_report"
+      ],
+      "predicted_category": "bug_report",
+      "confidence": 0.9,
+      "impact": "high",
+      "correct": true,
+      "acceptable_correct": true,
+      "high_confidence": true,
+      "false_confidence": false,
+      "elapsed_ms": 4672
+    },
+    {
+      "id": 305,
+      "type": "edge_case",
+      "subject": "😡🔥💀",
+      "notes": "Subject and body are entirely emojis — no textual semantic content",
+      "expected_category": "general_question",
+      "acceptable_categories": [
+        "general_question",
+        "bug_report",
+        "billing_issue",
+        "feature_request"
+      ],
+      "predicted_category": "billing_issue",
+      "confidence": 0.3,
+      "impact": "medium",
+      "correct": false,
+      "acceptable_correct": true,
+      "high_confidence": false,
+      "false_confidence": false,
+      "elapsed_ms": 9835
+    }
+  ]
+}
